@@ -55,7 +55,16 @@ Use the existing empty repository. Create only the new skill package and support
 
 - [x] Check that the personal skill destination does not exist, then symlink this repository's skill directory into the user skill discovery directory.
 - [x] Verify the link resolves to the authored skill; do not claim runtime activation from filesystem presence alone.
-- [ ] Review the exact tracked file list and scan for private paths/credentials before committing.
-- [ ] Create the private GitHub repository without overwriting an existing remote; push the initial commit.
-- [ ] Verify remote privacy, default branch, and remote commit identity.
-- [ ] Hand off the repository URL, local skill entry, invocation text, and what has/has not been tested.
+- [x] Review the exact tracked file list and scan for private paths/credentials before committing.
+- [x] Create the private GitHub repository without overwriting an existing remote; push the initial commit.
+- [x] Verify remote privacy, default branch, and remote commit identity.
+- [x] Prepare handoff with the repository URL, local skill entry, invocation text, and what has/has not been tested.
+
+## Initial verification record
+
+- Eight standard-library package tests passed after first confirming the missing-package failure.
+- Both YAML metadata documents parsed successfully.
+- Staged whitespace checks passed; the nine-file publication set was reviewed for private paths and credentials.
+- A read-only Codex App Server `skills/list` request found `shared-understanding` with `enabled: true`, `scope: user`, and the expected display metadata. No agent turn or model evaluation was started by this check.
+- GitHub confirmed a private repository with `main` as the default branch, and the first remote commit matched the local commit.
+- Behavioral cases remain unexecuted; user comprehension and reliable model adherence have not been established.
