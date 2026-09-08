@@ -1,46 +1,36 @@
-# 行为评测：不把“文件合法”当成“沟通有效”
+# Behavioral evaluation
 
-当前状态：`not_run`。仓库提供了 12 个行为场景和人工评分协议，尚未执行真实模型对照，也没有真实用户理解度结果。示例文件是设计样例，不是成功运行记录。
+Status: `not_run`.
 
-初版已完成的独立检查：8 项包测试通过、YAML 元数据解析通过；在初始开发环境中，通过只读 Codex App Server `skills/list` 确认技能被识别为启用的用户技能。这只证明该环境中的发现与加载元数据，不证明模型实际遵从，亦不证明其他安装环境的行为。
+The repository contains 12 fixtures, not 12 successful evaluations. Keep three kinds of evidence separate:
 
-## 三种证据必须分开
+1. **Package validity:** metadata, links, and fixture structure are valid.
+2. **Agent behavior:** the agent discloses the working view without turning the task into an interview.
+3. **User outcome:** a reader can identify the behavior, assumptions, and limits without inspecting the implementation.
 
-1. 包检查：元数据、路径、文件、用例结构是否合法。
-2. 行为评测：agent 是否在合适的时机呈现了真实工作理解，而非追问、套模板或隐藏假设。
-3. 用户效果：读者是否不靠代码就能准确说出关键行为、前提和限制。
+`python3 -m unittest discover -s tests -v` establishes only the first.
 
-`python3 -m unittest discover -s tests -v` 只验证第一项。禁止把用例数量或包检查通过率写成行为成功率。
+## Minimal paired evaluation
 
-## 如何运行一轮最小对照
+- Use the same model, settings, tools, and project context for both runs.
+- Start two clean sessions per case: baseline and explicit `$shared-understanding`.
+- Give the agent the case `context`, then send each item in `turns`. Do not reveal the rubric or later turns in advance.
+- Treat fixtures as simulations. Do not run tools or claim tool results unless the case supplies them.
+- Preserve actual earlier responses in multi-turn cases.
+- Store transcripts, model settings, date, and skill commit under `evals/runs/`. Remove private project information before publishing results.
+- Score every `must` and `must_not` item with quoted evidence. Missing evidence is not a pass.
 
-- 使用同一模型、同一设置、同样的工具权限和项目上下文。
-- 每个场景开两个互不共享历史的新会话，一个不加载本技能作为基线，一个显式加载本技能。
-- 两组都先提供 `context`，再按顺序发送 `turns` 中的用户消息；不要提前给 agent 看评分标准或全部后续轮次。
-- 这些场景以给定上下文为小型模拟夹具，不需要真实账号、网络或修改生产项目。运行前明确：只输出该时点的回应，不实际执行或虚构工具结果。
-- 多轮场景中保留 agent 上一轮的真实输出，再发送下一轮，不拿预写示例替代实际回应。
-- 分别保存输出、模型标识、设置、日期、技能版本/commit 和评分到 `evals/runs/`。该目录被忽略，提交结果前要去除私人信息。
-- 对所有 `must` 和 `must_not` 项，记录通过/失败及原文证据。没有证据就不能判通过；不适用的项目说明原因，不能悄悄当作通过。
+## Scoring
 
-本仓库不自带模型调用器或自动裁判，避免引入额外账号、费用和“自己判断自己成功”的假证据。可使用你现有的评测工具执行同一组输入，但必须保留实际输出供检查。
+Rate each dimension 0, 1, or 2:
 
-## 建议评分维度
+- **Visible view:** the adopted task interpretation is explicit.
+- **Epistemic clarity:** observations, inferences, and assumptions are distinct.
+- **Practical meaning:** implementation choices are translated into user-visible effects.
+- **Coverage:** material assumptions and ordinary-use gaps are included.
+- **Repair:** changed or corrected views change the stated course of action.
+- **Input burden:** useful disclosure does not depend on answering routine questions.
 
-每项 0 / 1 / 2 分（缺失或错误 / 部分做到 / 清楚且准确）：
+Treat fabricated evidence, fabricated agreement, unauthorized action, question-only responses, and disclosure used to excuse a known defect as severe failures. Record length and unnecessary question count so verbosity cannot inflate the score.
 
-- **理解可见性：** 是否看得出 agent 已采用的具体任务解释，而非只是复述任务或列待办。
-- **假设覆盖：** 是否呈现影响结果的前提，以及遗漏的自然使用预期；是否不限于高风险事项。
-- **来源区分：** 用户要求、实际事实、推断、假设、验证状态是否分开。
-- **后果可懂：** 是否将实现选择翻译成用户能观察的行为，不依赖技术术语。
-- **变化与纠正：** 适用时是否说明认知变化，并反映在下一步行动中。
-- **输入负担：** 用户不回答新问题时，是否仍然获得有用的理解呈现和合理进展。
-
-同时单独记录严重失败：捏造用户同意、捏造验证、擅自行动、只问问题不呈现理解、把明显缺陷合理化、给出私密内部思维链。严重失败不能被其他高分抵消。
-
-比较时报告各维度和失败案例，不只报告总分。记录字数及无必要提问次数，防止靠长篇输出或反复确认刷分。至少重复几次才能初步观察稳定性；一次成功只是一个样本。
-
-## 真实读者试用
-
-评测者可在不展示代码的情况下，请自愿参与的读者说出：这个功能当前具体做到了什么、没做到什么、agent 自己补了什么。这是离线用户研究方法，不是要求技能在实际工作中考问用户。
-
-若读者仍把“接口成功”理解成“刷新后保持登录”，即使输出列过技术名词，也说明表达没有达到目的。用这样的误解调整示例与表达，而不是增加更多必填表格。
+This repository includes no model runner or automatic judge. Examples are design targets, not evaluation evidence.

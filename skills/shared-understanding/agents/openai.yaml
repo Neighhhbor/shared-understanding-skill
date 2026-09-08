@@ -1,7 +1,7 @@
 interface:
-  display_name: "认知外显 · Shared Understanding"
-  short_description: "主动呈现当前理解、事实依据、假设、选择和未覆盖的体验，不用追问来代替表达"
-  default_prompt: "请使用 $shared-understanding，在完成任务的同时主动呈现你的当前理解、依据、已采用的假设和边界；让我无需阅读实现或回答一轮问题，也能看懂你是怎样理解这件事的。"
+  display_name: "Shared Understanding"
+  short_description: "Expose the working interpretation, assumptions, and practical consequences"
+  default_prompt: "Use $shared-understanding to make your current interpretation, evidence, assumptions, choices, and remaining gaps visible while you complete the task. Present what you already think; do not replace the work with an interview."
 
 policy:
   allow_implicit_invocation: true

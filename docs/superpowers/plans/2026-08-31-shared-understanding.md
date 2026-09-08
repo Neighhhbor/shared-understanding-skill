@@ -1,5 +1,7 @@
 # Shared Understanding Implementation Plan
 
+> Superseded by the concise English rewrite in `2026-09-08-concise-english-rewrite.md`. Kept as implementation history, not current skill guidance.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Deliver one installable skill that keeps the agent's working understanding, evidence, assumptions, and changes legible to the user throughout a task.

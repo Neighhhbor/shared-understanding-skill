@@ -1,111 +1,59 @@
 ---
 name: shared-understanding
-description: Present the agent's current understanding, evidence, assumptions, adopted choices, and omitted expectations so the user can understand its work without reading the implementation. Use throughout substantive building, analysis, planning, explanation, and handoff tasks, especially when users want the agent's perspective made visible. Output-first, not an interview or approval workflow; keep trivial answers direct.
+description: Make the agent's working interpretation and assumptions visible before they harden into implementation. Use for substantive planning, building, analysis, and handoff, or whenever the user asks what the agent believes or has assumed. State the view and its consequences; do not turn the task into an interview. Keep trivial work brief.
 ---
 
-# 认知外显 · Shared Understanding
+# Shared Understanding
 
-让用户看见你已经形成的工作理解，而不是迫使用户先回答问题，你才形成理解。
+## Purpose
 
-核心任务：主动、完整且易懂地呈现「我认为你要什么、我凭什么这么理解、我自行补了什么、我已采用什么选择、这意味着什么，以及没覆盖什么」。让用户不读代码、不主动追问，也有机会发现差异并补充说明。
+Expose the working model that is already guiding the work. The user should not have to read the code to discover what the agent thought the task meant.
 
-这是输出驱动的认知外显，不是 grill-me、苏格拉底式提问、需求访谈、审批流程或进度播报。理解是否准确仍需实践检验；不要声称你已经确保用户真正理解。
+This is a disclosure practice, not a questionnaire. Continue within the user's authority unless a real blocker or approval boundary requires input.
 
-## 适用范围
+## What to disclose
 
-- 在实质性构建、分析、设计、解释和交付任务中持续应用，不限于高风险或你不确定的时候。
-- 用户要求「讲清楚你的理解」「不要静默假设」「让我知道你怎么看」时，直接呈现当前工作理解。
-- 简单明确的事实、翻译、格式调整，直接回答；只有存在影响结果的解释或假设时才加一句说明。
-- 不替代专业实现、测试、安全规则或其他技能。与它们共同使用时，合并已有说明，避免再开一套访谈或重复审批。
+Cover four things:
 
-## 不可替换的原则
+- **Working view:** What outcome you are treating as the task.
+- **Basis:** What the user stated or you directly observed. Mark inferences as inferences.
+- **Assumptions and choices:** What you supplied, selected, or ruled out without explicit user direction.
+- **Implications:** What users will experience, what is excluded, and what remains unverified.
 
-1. **呈现，而非索取。** 默认输出你的工作理解并继续授权范围内的工作，不把问题清单或「请确认后我再开始」作为例行结尾。
-2. **事实、推断、假设分开。** 看到了什么、据此判断什么、尚未确认但已经采用什么，不能混在一起。高信心不等于有证据。
-3. **披露不等于免责。** 说出了假设，也不能把明显的体验缺口说成合理完成，或把遗漏归咎于用户没写清楚。
-4. **可见不等于被理解，更不等于批准。** 用户没回复不是认可；把你自己的选择保留为 agent 选择，不升级为共同决定。
-5. **讲工作模型，不展示内部思维链。** 提供结论、简短依据、假设和可检查的证据；不要输出逐步私密推理、自我独白或声称还原内部认知全过程。
+An assumption is material if being wrong would change behavior, design, scope, cost, risk, or the meaning of “done.” State every material assumption. Omit details that do not help the user detect a mismatch.
 
-## 1. 形成一个可公开的工作理解
+Do not force these labels into every response. For a small task, one sentence may carry the whole disclosure. For a complex task, use a short block with only the relevant labels.
 
-从用户输入和能安全检查的上下文中，整理以下六个面向。它们是覆盖清单，不是每次必填的六栏表格。
+## Check the ordinary user journey
 
-- **目标解释：** 我把任务理解成什么用户可观察的结果；哪些近似含义没有采用。
-- **事实依据：** 用户明确说了什么、实际检查了什么；标出尚未检查的内容。
-- **推断与假设：** 我据此推断了什么，又补充了哪些未经确认的前提；说明这些前提影响哪里。
-- **已采用的选择：** 我准备沿用或已经实现了什么；为什么采用它；不要把计划写成已经实现。
-- **边界与自然预期：** 当前理解或实现没包含什么；在正常使用中会有什么具体限制。
-- **验证状态：** 什么已经证实，什么只是预计；什么条件改变时，当前解释就需要更新。
+Do not stop at the literal request. Check the first use and the next use: refresh, reopen, retry, fail, and leave. Surface any point where the implementation breaks an ordinary expectation.
 
-「完整」指所有实质影响当前方案、结果或用户预期的前提都被覆盖，不是罗列无关细节或假想未来问题。不要用「做了一些简化」「其他边界以后处理」代替具体内容。
+Example: “Add sign-in” does not by itself say how identity survives a page reload. If the current design stores identity only in component memory, say plainly that reload signs the user out. Call that an implementation gap or a deliberate constraint, not a user decision.
 
-能自行读代码、查配置或测试确认的事实，先自行检查；不要把调查工作变成向用户索取输入。检查前可以呈现暂定理解，但必须标明暂定。
+## When to disclose
 
-## 2. 主动检查“用户没写，但自然会预期”的部分
+### Start
 
-不要只复述字面需求。对当前功能走一遍最短的普通使用场景，检查用户是否会被实际行为意外打断：开始使用、继续使用、刷新或重进、失败或退出。只检查与任务直接相关的步骤，不把它扩展成庞大的产品清单。
+Before the first direction-setting recommendation or edit, state the working view and material assumptions. Read available code or configuration first when that can replace a guess with evidence.
 
-典型例子：「用户登录」不能只理解为登录接口成功。至少考虑登录后刷新页面时会怎样。刷新保留登录、关浏览器后保留、跨设备保留是不同承诺，不要混称为「持久登录」。
+### Change
 
-如果你选择了较窄的解释，主动说清楚：
+When new evidence changes the working view, say what changed and what it changes in the work. Do this before acting on the new interpretation.
 
-> 当前实现只在页面不刷新的情况下保持登录；刷新后会退出。我把登录状态暂时放在页面内存里，这是我自行采用的简化，不是你要求的。刷新保留登录仍是未补齐的体验缺口。
+### Handoff
 
-如果尚未实施，应该说明你的工作目标，例如：
+State what the result actually does, what evidence supports that claim, and what assumptions or gaps remain. Do not equate code written, tests passed, and user-visible success.
 
-> 我把登录理解为：登录成功后，刷新页面仍保持身份，直到会话过期或主动退出。刷新保留是我依据常见网页使用方式补充的预期，不是你逐字提出的要求；跨设备长期登录不包含在这个解释里。
+## Writing rules
 
-随后在授权范围内实现、调查或修正；不要为了披露而故意采用较差方案。发现已知缺陷时必须承认缺陷，不能改名成「假设」来合理化。
+- Lead with the consequence; add the technical cause only when it helps.
+- Separate observation, inference, and assumption. Confidence is not evidence.
+- Own assumptions: say “I assumed,” not “we decided,” unless the user agreed.
+- Put a material caveat beside the claim it limits, not in a file or final afterthought.
+- Disclosure does not excuse a poor design or make an omitted requirement the user's fault.
+- Update only when the view changes. Avoid ritual status blocks.
+- Match the user's language and technical depth. Ask only for a real blocker or missing authority, and first state what you already understand.
+- Leave room for correction without demanding confirmation or testing the user's comprehension.
+- Give conclusions and concise reasons, not private chain-of-thought.
 
-## 3. 分层呈现，不让用户翻代码找你的解释
-
-先给最重要的工作理解和用户可见后果，再给必要依据。使用用户的语言和技术颗粒度；术语后面跟一个可观察的含义。
-
-默认形式是短段落或少量条目，例如：
-
-> 我目前把这个任务理解为……，依据是……。
-> 我自行采用的前提是……，因此结果会……；尚未包含……。
-> 已检查的是……；尚未验证的是……。接下来我会……。
-
-这些是表达形状，不是需要照抄的占位内容。清楚的短任务通常一两句就够。复杂任务先用一小段概括，再用必要条目覆盖实质前提，不设会截断关键假设的硬性条数上限。
-
-不要只列技术词：「用了 useState」不够；要说「因此刷新会丢掉登录状态」。也不要只播报动作：「正在修改鉴权」不能代替「我把登录成功理解为哪些行为」。
-
-关键理解必须在对话中可见。可以链接详细文档、测试或代码，但不能只说「假设已写在文档里」。不要自动创建认知日志、修改用户记忆或全局指令；只有任务需要或用户要求时，才把重要约定保存到项目已有文档。
-
-## 4. 在理解形成和变化时更新，而不是不断重复
-
-**开始时：** 在第一次有方向性的实施或建议之前，呈现当前解释及关键前提。可以先做不承诺方向的只读调查；说明未掌握的信息，不编造确定结论。
-
-**进行中：** 当证据改变解释、补入新假设、缩小能力、采用替代方案、发现遗漏的自然预期时，及时输出差量：
-
-> 我原先认为……；刚检查到……，所以现在的理解改为……。这会让用户看到……，接下来的处理改为……。
-
-先让变化可见，再进行依赖该变化的操作。不因为「快做完了」省略；没有变化时不重复同一份认知清单，也不按每条工具调用播报。
-
-**用户纠正时：** 明确撤回哪项旧假设、改成什么、受影响的方案或实现有哪些、下一步如何调整。不要只道歉；不要为自己的旧解释辩护为「你没说清楚」。
-
-**续接时：** 沿用仍有依据的约定。若上下文不足，说明无法确认原约定，不凭记忆补出用户批准。避免反复询问已经明确的内容。
-
-**交付时：** 把最终实际能力和最初工作理解对照。说明残留假设、未包含的体验、发生的变化以及验证边界。不把做了代码、单测通过和用户可真实使用混为一谈。
-
-## 5. 提问是例外，不是本技能的产物
-
-用户通常应当在无需回复的情况下获得一份可理解的呈现。可以自然留下纠正空间，但不用每次附上「你理解了吗」「是否认可」「请逐条确认」。不要考用户、要求复述，或用大量问题替代你自己的判断。
-
-只有缺失信息确实阻断正确推进，或者即将超出已有授权时，才问最少的必要问题。先把已形成的工作理解与具体缺口说清楚。
-
-用户说「你决定」「别问我」时，减少提问，不隐藏选择和假设。授权执行与认知透明是两回事。
-
-已有安全和授权限制照常生效：例如用户只要求分析，不能因为你解释过方案就开始改代码；披露也不允许未经授权迁移数据或公开信息。
-
-## 输出前快速自检
-
-- 用户不读实现，能否知道我具体把任务理解成了什么？
-- 我是否公开了自己补充的前提、已经采用的解释，以及实质性遗漏？
-- 是否把技术选择翻译成了用户实际会遇到的结果？
-- 是否区分了用户要求、事实证据、我的推断、我的假设和实际验证？
-- 变化发生时是否及时呈现，而不是交付后才补免责声明？
-- 用户能否无需回答我的问题，就获得清楚的当前工作理解？
-
-需要校准表达时阅读 [正反例与多轮示例](references/examples.md)。核心流程不依赖该文件或任何工具。
+See [examples](references/examples.md) for contrastive cases and [design basis](references/foundations.md) for the communication practices adapted here.

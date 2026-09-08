@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "shared-understanding"
+CJK = re.compile(r"[\u3400-\u9fff]")
 
 
 class SkillPackageTests(unittest.TestCase):
@@ -21,17 +22,17 @@ class SkillPackageTests(unittest.TestCase):
         self.assertEqual(fields["name"].strip(), SKILL.name)
         description = fields["description"].strip()
         self.assertTrue(20 <= len(description) <= 1024)
-        self.assertIn("Present", description)
+        self.assertIn("Make", description)
 
     def test_core_is_bounded_and_self_contained(self):
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
-        self.assertLess(len(text.splitlines()), 250)
-        self.assertLess(len(text.encode("utf-8")), 24000)
+        self.assertLessEqual(len(text.splitlines()), 85)
+        self.assertLess(len(text.encode("utf-8")), 12000)
         self.assertNotRegex(text, r"\b(?:TODO|TBD|FIXME)\b")
 
     def test_optional_codex_metadata(self):
         text = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
-        self.assertIn('display_name: "认知外显 · Shared Understanding"', text)
+        self.assertIn('display_name: "Shared Understanding"', text)
         self.assertIn("$shared-understanding", text)
         self.assertIn("allow_implicit_invocation: true", text)
 
@@ -39,6 +40,7 @@ class SkillPackageTests(unittest.TestCase):
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         links = re.findall(r"\]\(([^)]+)\)", text)
         self.assertIn("references/examples.md", links)
+        self.assertIn("references/foundations.md", links)
         for link in links:
             with self.subTest(link=link):
                 self.assertNotIn("://", link)
@@ -78,9 +80,28 @@ class SkillPackageTests(unittest.TestCase):
         self.assertTrue(any(len(case["turns"]) > 1 for case in data["cases"]))
 
     def test_handoff_docs_exist(self):
-        for name in ("README.md", "evals/README.md", "skills/shared-understanding/references/examples.md"):
+        for name in (
+            "README.md",
+            "evals/README.md",
+            "skills/shared-understanding/references/examples.md",
+            "skills/shared-understanding/references/foundations.md",
+        ):
             with self.subTest(name=name):
                 self.assertGreater(len((ROOT / name).read_text(encoding="utf-8")), 300)
+
+    def test_maintained_text_is_english(self):
+        text_files = [
+            ROOT / "README.md",
+            ROOT / "evals" / "README.md",
+            ROOT / "evals" / "cases.json",
+            *(
+                path for path in SKILL.rglob("*")
+                if path.is_file() and path.suffix in {".md", ".yaml", ".json"}
+            ),
+        ]
+        for path in text_files:
+            with self.subTest(path=str(path.relative_to(ROOT))):
+                self.assertIsNone(CJK.search(path.read_text(encoding="utf-8")))
 
     def test_skill_contains_no_machine_specific_paths(self):
         self.assertTrue((SKILL / "SKILL.md").is_file())
