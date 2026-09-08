@@ -93,4 +93,4 @@ git diff --check
 
 - [x] Confirm there are no CJK characters outside Git history and no machine-specific paths in the skill package.
 - [x] Inspect the full diff and file sizes. Confirm the installed symlink still resolves to the edited skill.
-- [ ] Commit the rewrite and push `main`; verify local and remote commit IDs match.
+- [x] Commit the rewrite and push `main`; verify local and remote commit IDs match.
